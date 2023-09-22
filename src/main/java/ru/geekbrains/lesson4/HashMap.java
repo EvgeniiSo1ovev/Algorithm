@@ -1,5 +1,6 @@
 package main.java.ru.geekbrains.lesson4;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.Iterator;
 
 /**
@@ -8,7 +9,7 @@ import java.util.Iterator;
  * @param <K> тип ключа
  * @param <V> тип значения
  */
-public class HashMap<K, V> {
+public class HashMap<K, V> implements Iterable {
 
     //region Публичные методы
 
@@ -38,14 +39,44 @@ public class HashMap<K, V> {
     public String toString() {
         StringBuilder result = new StringBuilder();
         if (buckets.length > 0) {
-            for (int i = 0; i < buckets.length; i++) {
-                if (buckets[i] != null) {
-                    result.append(buckets[i].toString());
+            for (Bucket bucket : buckets) {
+                if (bucket != null) {
+                    result.append(bucket);
                     result.append("; ");
                 }
             }
         }
         return result.toString();
+    }
+
+    @Override
+    public Iterator<Entity> iterator() {
+        return new Iterator<>() {
+            private int index = 0;
+            private Iterator<Entity> iterator;
+            private boolean nextBucket = true;
+
+            @Override
+            public boolean hasNext() {
+                while (index < buckets.length && buckets[index] == null) {
+                    index++;
+                }
+                if (index < buckets.length && buckets[index] != null && nextBucket) {
+                    iterator = buckets[index].iterator();
+                    nextBucket = false;
+                }
+                return index < buckets.length;
+            }
+
+            @Override
+            public Entity next() {
+                Entity result = (Entity) iterator.next().value;
+                if (!iterator.hasNext()) {
+                    nextBucket = true;
+                }
+                return result;
+            }
+        };
     }
 
     //endregion
@@ -108,7 +139,7 @@ public class HashMap<K, V> {
     /**
      * Элемент массива (связный список) из которого состоит хэш-таблица
      */
-    class Bucket<K, V> {
+    class Bucket<K, V> implements Iterable {
 
 
         /**
@@ -175,6 +206,25 @@ public class HashMap<K, V> {
                 }
             }
             return result.toString();
+        }
+
+        @Override
+        public Iterator<Entity> iterator() {
+            return new Iterator<>() {
+                Node next = head;
+
+                @Override
+                public boolean hasNext() {
+                    return next != null;
+                }
+
+                @Override
+                public Entity next() {
+                    Node result = next;
+                    next = next.next;
+                    return result.value;
+                }
+            };
         }
     }
 

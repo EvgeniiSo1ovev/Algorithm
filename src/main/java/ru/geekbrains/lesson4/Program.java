@@ -1,6 +1,7 @@
 package main.java.ru.geekbrains.lesson4;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Program {
 
@@ -33,7 +34,9 @@ public class Program {
 
         System.out.println(hashMap);
 
-
+        for (HashMap<String, String>.Entity entity : (Iterable<HashMap<String, String>.Entity>) hashMap) {
+            System.out.println(entity.toString());
+        }
     }
 
 }

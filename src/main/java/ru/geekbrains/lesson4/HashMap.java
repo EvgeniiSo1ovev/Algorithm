@@ -70,8 +70,9 @@ public class HashMap<K, V> implements Iterable {
 
             @Override
             public Entity next() {
-                Entity result = (Entity) iterator.next().value;
+                Entity result = iterator.next();
                 if (!iterator.hasNext()) {
+                    index++;
                     nextBucket = true;
                 }
                 return result;
@@ -134,6 +135,18 @@ public class HashMap<K, V> implements Iterable {
          */
         V value;
 
+        public K getKey(){
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString(){
+            return String.format("%s:%s", getKey().toString(), getValue().toString());
+        }
     }
 
     /**
